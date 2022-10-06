@@ -1,7 +1,11 @@
 import java.io.*;
 import java.util.Scanner;
 
-public class model {
+  public class model {
+      public static void main(String[] args) {
+
+      }
+
 
     // ska läsa fillen med datan
     public String fileReader(){
@@ -20,6 +24,28 @@ public class model {
         }
         return data;
     }
+// kalla nyckeln
+    private String key(){
+        String fileInput = "key.txt";
+        String key = null;
+        try {
+            File input = new File(fileInput);
+            Scanner reader = new Scanner(input);
+            while (reader.hasNextLine()){
+                key = reader.nextLine();
+            }
+            reader.close();
+
+        } catch (FileNotFoundException e) {
+            System.out.println("Ingen file eller kunde inte läsa file");
+            e.printStackTrace();
+        }
+        return key;
+    }
+
+
+
+    /*
     //krypteraren
     public void kryptering (String data){
         //her sring informationen till en char array
@@ -32,20 +58,10 @@ public class model {
             int charTOint = chars[i];
             int kry_meddelande = Cmk(charTOint);
             String intTObinary = Integer.toBinaryString(kry_meddelande);
-
         }
-    }
-    private int key(){
-        String fileInput = "key.txt";
-    }
+    }*/
 
-    private int Cmk(int charTOint) {
-        int m = charTOint;
-        int k =   ;
-        int c = m^k;
 
-        return c;
-    }
 
     // ska över den krypterade informationen till en fill
     /* public void fileWriter(){
