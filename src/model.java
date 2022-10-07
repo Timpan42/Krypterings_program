@@ -3,12 +3,46 @@ import java.util.Scanner;
 
   public class model {
       public static void main(String[] args) {
+          String m = fileReader();
+          String k = key();
+          model crypModel = new model();
+          String file = "Model_fil";
+          try {
+              File myObj = new File(file);
+              if (myObj.createNewFile()) {
+                  System.out.println("File created: " + myObj.getName());
+              } else {
+                  System.out.println("File already exists.");
+              }
+          } catch (IOException e) {
+              System.out.println("An error occurred.");
+              e.printStackTrace();
+          }
+          String svar = crypModel.cryptSting(m,k);
+          String svarX = crypModel.cryptSting(svar,k);
+          System.out.println(svar);
+          System.out.println(svarX);
+
+
+
+          System.out.println();
+
+          try {
+              FileWriter myWriter = new FileWriter(file);
+              myWriter.write(svar);
+              myWriter.write("\n" + svarX);
+              myWriter.close();
+              System.out.println("Successfully wrote to the file.");
+          } catch (IOException e) {
+              System.out.println("An error occurred.");
+              e.printStackTrace();
+          }
 
       }
 
 
     // ska läsa fillen med datan
-    public String fileReader(){
+    public static String fileReader(){
         String fileInput = "krypt_fill.txt";
         String data = null;
         try {
@@ -16,6 +50,7 @@ import java.util.Scanner;
             Scanner reader = new Scanner(input);
             while (reader.hasNextLine()){
                 data = reader.nextLine();
+
             }
             reader.close();
         } catch (FileNotFoundException e) {
@@ -24,8 +59,9 @@ import java.util.Scanner;
         }
         return data;
     }
+
 // kalla nyckeln
-    private String key(){
+    private static String key(){
         String fileInput = "key.txt";
         String key = null;
         try {
@@ -42,6 +78,33 @@ import java.util.Scanner;
         }
         return key;
     }
+        //krypt med en String
+      private String cryptSting(String message, String key) {
+          String svar = "";
+          while (key.length() < message.length()){
+              key = expandKey(key);
+          }
+          for (int i = 0; i < message.length(); i++) {
+              svar += (char)crypt(message.charAt(i), key.charAt(i));
+          }
+          return svar;
+      }
+
+      // long nyckel
+      private String expandKey(String key) {
+          return key+key;
+      }
+
+      // kryptera
+      private int crypt( int m,  int k) {
+          return m^k;
+      }
+
+
+
+
+
+
 
 
 
