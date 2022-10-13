@@ -2,11 +2,30 @@ import java.io.*;
 import java.util.Scanner;
 
   public class model {
-      public static void main(String[] args) {
-          String m = fileReader();
-          String k = key();
-          model crypModel = new model();
-          String file = "Model_fil";
+      private String message;
+      private String key;
+      private String file;
+      private String crypt;
+
+
+
+      public void setMessage (String message){
+          this.message = message;
+      }
+
+      public void setKey (String key){
+          this.key = key;
+      }
+      public void setFile(String file){
+          this.file = file;
+      }
+
+      public String getCrypt(){
+          return crypt;
+      }
+
+
+      private static void makeFile() {
           try {
               File myObj = new File(file);
               if (myObj.createNewFile()) {
@@ -18,31 +37,25 @@ import java.util.Scanner;
               System.out.println("An error occurred.");
               e.printStackTrace();
           }
-          String svar = crypModel.cryptSting(m,k);
-          String svarX = crypModel.cryptSting(svar,k);
-          System.out.println(svar);
-          System.out.println(svarX);
+      }
 
-
-
-          System.out.println();
-
+      private static void fileOutput() {
           try {
               FileWriter myWriter = new FileWriter(file);
               myWriter.write(svar);
-              myWriter.write("\n" + svarX);
+              myWriter.write("\n" + svarCrypt);
               myWriter.close();
               System.out.println("Successfully wrote to the file.");
           } catch (IOException e) {
               System.out.println("An error occurred.");
               e.printStackTrace();
           }
-
       }
 
 
-    // ska läsa fillen med datan
-    public static String fileReader(){
+      // ska läsa fillen med datan
+
+      public static String fileReader(){
         String fileInput = "krypt_fill.txt";
         String data = null;
         try {
@@ -59,9 +72,9 @@ import java.util.Scanner;
         }
         return data;
     }
+    // kalla nyckeln X
 
-// kalla nyckeln
-    private static String key(){
+      private static String key(){
         String fileInput = "key.txt";
         String key = null;
         try {
@@ -79,7 +92,8 @@ import java.util.Scanner;
         return key;
     }
         //krypt med en String
-      private String cryptSting(String message, String key) {
+
+      private void cryptSting() {
           String svar = "";
           while (key.length() < message.length()){
               key = expandKey(key);
@@ -87,19 +101,32 @@ import java.util.Scanner;
           for (int i = 0; i < message.length(); i++) {
               svar += (char)crypt(message.charAt(i), key.charAt(i));
           }
-          return svar;
+          crypt = svar;
       }
+      // long nyckel X
 
-      // long nyckel
       private String expandKey(String key) {
           return key+key;
       }
+      // kryptera X
 
-      // kryptera
       private int crypt( int m,  int k) {
           return m^k;
       }
 
+      public static void main(String[] args) {
+          String m = fileReader();
+          String k = key();
+          String file = "Model_fil";
+          model crypModel = new model();
+          makeFile();
+          String svar = crypModel.cryptSting(m,k);
+          String svarCrypt = crypModel.cryptSting(svar,k);
+          System.out.println(svar);
+          System.out.println(svarCrypt);
+
+          fileOutput();
+      }
 
 
 
