@@ -1,3 +1,5 @@
+import com.sun.xml.internal.ws.api.ha.StickyFeature;
+
 import java.io.*;
 import java.util.Scanner;
 
@@ -5,27 +7,28 @@ import java.util.Scanner;
       private String message;
       private String key;
       private String file;
-      private String crypt;
+      private String crypt_svar;
 
 
 
-      public void setMessage (String message){
+      public void setMessage(String message) {
           this.message = message;
       }
 
-      public void setKey (String key){
+      public void setKey(String key) {
           this.key = key;
       }
-      public void setFile(String file){
+
+      public void setFile(String file) {
           this.file = file;
       }
 
-      public String getCrypt(){
-          return crypt;
+      public String getCrypt_svar() {
+          return crypt_svar;
       }
 
-
-      private static void makeFile() {
+      //skapar fil
+      private void makeFile() {
           try {
               File myObj = new File(file);
               if (myObj.createNewFile()) {
@@ -39,11 +42,12 @@ import java.util.Scanner;
           }
       }
 
-      private static void fileOutput() {
+      //prinar ut svaret i fil
+      private void fileOutput() {
           try {
               FileWriter myWriter = new FileWriter(file);
-              myWriter.write(svar);
-              myWriter.write("\n" + svarCrypt);
+              myWriter.write(crypt_svar);
+             //myWriter.write("\n" + svarCrypt);
               myWriter.close();
               System.out.println("Successfully wrote to the file.");
           } catch (IOException e) {
@@ -53,117 +57,81 @@ import java.util.Scanner;
       }
 
 
-      // ska läsa fillen med datan
+      // ska läsa fillen med datan (funkar inte med många rader)
+      public String fileReader() {
+          String fileInput = message;
+          String data = null;
+          try {
+              File input = new File(fileInput);
+              Scanner reader = new Scanner(input);
+              while (reader.hasNextLine()) {
+                  data = reader.nextLine();
 
-      public static String fileReader(){
-        String fileInput = "krypt_fill.txt";
-        String data = null;
-        try {
-            File input = new File(fileInput);
-            Scanner reader = new Scanner(input);
-            while (reader.hasNextLine()){
-                data = reader.nextLine();
+              }
+              reader.close();
+          } catch (FileNotFoundException e) {
+              System.out.println("Ingen file eller kunde inte läsa file");
+              e.printStackTrace();
+          }
+          return data;
+      }
 
-            }
-            reader.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("Ingen file eller kunde inte läsa file");
-            e.printStackTrace();
-        }
-        return data;
-    }
-    // kalla nyckeln X
+      // kalla nyckeln X
+      private String key() {
+          String fileInput = key;
+          String key = null;
+          try {
+              File input = new File(fileInput);
+              Scanner reader = new Scanner(input);
+              while (reader.hasNextLine()) {
+                  key = reader.nextLine();
+              }
+              reader.close();
 
-      private static String key(){
-        String fileInput = "key.txt";
-        String key = null;
-        try {
-            File input = new File(fileInput);
-            Scanner reader = new Scanner(input);
-            while (reader.hasNextLine()){
-                key = reader.nextLine();
-            }
-            reader.close();
+          } catch (FileNotFoundException e) {
+              System.out.println("Ingen file eller kunde inte läsa file");
+              e.printStackTrace();
+          }
+          return key;
+      }
 
-        } catch (FileNotFoundException e) {
-            System.out.println("Ingen file eller kunde inte läsa file");
-            e.printStackTrace();
-        }
-        return key;
-    }
-        //krypt med en String
-
+      //krypt med en String (funkar inte med många rader)
       private void cryptSting() {
           String svar = "";
-          while (key.length() < message.length()){
+          while (key.length() < message.length()) {
               key = expandKey(key);
           }
           for (int i = 0; i < message.length(); i++) {
-              svar += (char)crypt(message.charAt(i), key.charAt(i));
+              svar += (char) crypt(message.charAt(i), key.charAt(i));
           }
-          crypt = svar;
+          crypt_svar = svar;
       }
+
       // long nyckel X
-
       private String expandKey(String key) {
-          return key+key;
+          return key + key;
       }
-      // kryptera X
 
-      private int crypt( int m,  int k) {
-          return m^k;
+      // kryptera X
+      private int crypt(int m, int k) {
+          return m ^ k;
       }
 
       public static void main(String[] args) {
-          String m = fileReader();
-          String k = key();
-          String file = "Model_fil";
-          model crypModel = new model();
-          makeFile();
-          String svar = crypModel.cryptSting(m,k);
-          String svarCrypt = crypModel.cryptSting(svar,k);
-          System.out.println(svar);
-          System.out.println(svarCrypt);
+          String m = "krypt_fill.txt";
+          String k = "key.txt";
+          String f = "model_fill.txt";
 
-          fileOutput();
+          model cryptModel = new model();
+          cryptModel.setMessage(m);
+          cryptModel.setKey(k);
+          cryptModel.setFile(f);
+
+          cryptModel.cryptSting();
+          cryptModel.getCrypt_svar();
+          cryptModel.makeFile();
+          cryptModel.fileOutput();
+          System.out.println(cryptModel.getCrypt_svar());
+
       }
-
-
-
-
-
-
-
-
-    /*
-    //krypteraren
-    public void kryptering (String data){
-        //her sring informationen till en char array
-        char[] chars = data.toCharArray();
-        for (int i = 0; i < data.length(); i++) {
-            chars[i] = data.charAt(i);
-        }
-        //Gör en char till int kryptera sen till binary.
-        for (int i = 0; i < chars.length; i++) {
-            int charTOint = chars[i];
-            int kry_meddelande = Cmk(charTOint);
-            String intTObinary = Integer.toBinaryString(kry_meddelande);
-        }
-    }*/
-
-
-
-    // ska över den krypterade informationen till en fill
-    /* public void fileWriter(){
-        String filOutbut = "outbut.txt";
-        try {
-            FileWriter fw = new FileWriter(filOutbut);
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    } */
-    // https://www.programiz.com/java-programming/bufferedreader
-    // https://www.programiz.com/java-programming/bufferedwriter
-}
+  }
