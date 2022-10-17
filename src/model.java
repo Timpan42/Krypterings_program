@@ -1,5 +1,3 @@
-import com.sun.xml.internal.ws.api.ha.StickyFeature;
-
 import java.io.*;
 import java.util.Scanner;
 
@@ -7,9 +5,10 @@ import java.util.Scanner;
       private String message;
       private String key;
       private String file;
-      private String crypt_svar;
-
-
+      private String[] crypt_svar;
+      private String[] crypt_message;
+      private String crypt_key;
+      private int row;
 
       public void setMessage(String message) {
           this.message = message;
@@ -23,8 +22,20 @@ import java.util.Scanner;
           this.file = file;
       }
 
-      public String getCrypt_svar() {
+      public String[] getCrypt_svar() {
           return crypt_svar;
+      }
+
+      public String[] getCrypt_message() {
+          return crypt_message;
+      }
+
+      public String getCrypt_key() {
+          return crypt_key;
+      }
+
+      public int getRow(){
+          return row;
       }
 
       //skapar fil
@@ -46,8 +57,10 @@ import java.util.Scanner;
       private void fileOutput() {
           try {
               FileWriter myWriter = new FileWriter(file);
-              myWriter.write(crypt_svar);
-             //myWriter.write("\n" + svarCrypt);
+              for (int i = 0; i < row; i++) {
+                  myWriter.write(crypt_svar[i]);
+                  myWriter.write("\n");
+              }
               myWriter.close();
               System.out.println("Successfully wrote to the file.");
           } catch (IOException e) {
@@ -58,26 +71,29 @@ import java.util.Scanner;
 
 
       // ska läsa fillen med datan (funkar inte med många rader)
-      public String fileReader() {
+      public void fileReader() {
           String fileInput = message;
-          String data = null;
+          String[] data = null;
+          int i = 0;
           try {
               File input = new File(fileInput);
               Scanner reader = new Scanner(input);
               while (reader.hasNextLine()) {
-                  data = reader.nextLine();
-
+                  data[i] = reader.nextLine();
+                  i += 1;
               }
               reader.close();
           } catch (FileNotFoundException e) {
               System.out.println("Ingen file eller kunde inte läsa file");
               e.printStackTrace();
           }
-          return data;
+          System.out.println("tog i mot data");
+          row = i;
+          crypt_message = data;
       }
 
       // kalla nyckeln X
-      private String key() {
+      private void inputkey() {
           String fileInput = key;
           String key = null;
           try {
@@ -92,24 +108,31 @@ import java.util.Scanner;
               System.out.println("Ingen file eller kunde inte läsa file");
               e.printStackTrace();
           }
-          return key;
+          crypt_key = key;
       }
 
       //krypt med en String (funkar inte med många rader)
       private void cryptSting() {
-          String svar = "";
-          while (key.length() < message.length()) {
-              key = expandKey(key);
+          fileReader();
+          inputkey();
+          String char_svar = "";
+          String[] svar = new String[0];
+          for (int e = 0; e < row; e++){
+          while (crypt_key.length() < crypt_message[e].length()) {
+              crypt_key = expandKey(crypt_key);
           }
-          for (int i = 0; i < message.length(); i++) {
-              svar += (char) crypt(message.charAt(i), key.charAt(i));
+          for (int i = 0; i < crypt_message[e].length(); i++) {
+              char_svar += (char) crypt(crypt_message[e].charAt(i), crypt_key.charAt(i));
+              svar[e] = char_svar;
           }
+          System.out.println("Medelande krypterad");
           crypt_svar = svar;
+          }
       }
 
       // long nyckel X
-      private String expandKey(String key) {
-          return key + key;
+      private String expandKey(String crypt_key) {
+          return crypt_key + crypt_key;
       }
 
       // kryptera X
@@ -128,9 +151,11 @@ import java.util.Scanner;
           cryptModel.setFile(f);
 
           cryptModel.cryptSting();
+          cryptModel.fileReader();
           cryptModel.getCrypt_svar();
           cryptModel.makeFile();
           cryptModel.fileOutput();
+
           System.out.println(cryptModel.getCrypt_svar());
 
       }
