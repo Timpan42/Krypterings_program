@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 
   public class model {
@@ -58,8 +59,16 @@ import java.util.Scanner;
           try {
               FileWriter myWriter = new FileWriter(file);
               for (int i = 0; i < row; i++) {
+                  System.out.println(crypt_svar[i]);
+              }
+
+              for (int i = 0; i < row; i++) {
                   myWriter.write(crypt_svar[i]);
+                  System.out.println(crypt_svar[i]);
                   myWriter.write("\n");
+              }
+              for(int j = 0 ;  j < row ; j++){
+
               }
               myWriter.close();
               System.out.println("Successfully wrote to the file.");
@@ -70,16 +79,16 @@ import java.util.Scanner;
       }
 
 
-      // ska läsa fillen med datan (funkar inte med många rader)
+      // ska läsa fillen med datan
       public void fileReader() {
           String fileInput = message;
-          String[] data = null;
+          ArrayList<String> data = new ArrayList<>();
           int i = 0;
           try {
               File input = new File(fileInput);
               Scanner reader = new Scanner(input);
               while (reader.hasNextLine()) {
-                  data[i] = reader.nextLine();
+                  data.add(reader.nextLine());
                   i += 1;
               }
               reader.close();
@@ -89,7 +98,11 @@ import java.util.Scanner;
           }
           System.out.println("tog i mot data");
           row = i;
-          crypt_message = data;
+          Object[] tmp = data.toArray();
+          String[] tmp2 = new String[tmp.length];
+          for (int j = 0 ; j < tmp.length ; j++)
+              tmp2[j] = (String)tmp[j];
+          crypt_message = tmp2;
       }
 
       // kalla nyckeln X
@@ -115,18 +128,19 @@ import java.util.Scanner;
       private void cryptSting() {
           fileReader();
           inputkey();
-          String char_svar = "";
-          String[] svar = new String[0];
+          int messageLength = crypt_message.length;
+          String[] svar = new String[messageLength];
           for (int e = 0; e < row; e++){
-          while (crypt_key.length() < crypt_message[e].length()) {
-              crypt_key = expandKey(crypt_key);
-          }
-          for (int i = 0; i < crypt_message[e].length(); i++) {
-              char_svar += (char) crypt(crypt_message[e].charAt(i), crypt_key.charAt(i));
-              svar[e] = char_svar;
-          }
-          System.out.println("Medelande krypterad");
-          crypt_svar = svar;
+              String char_svar = "";
+              while (crypt_key.length() < crypt_message[e].length()) {
+                  crypt_key = expandKey(crypt_key);
+              }
+              for (int i = 0; i < crypt_message[e].length(); i++) {
+                  char_svar += (char) crypt(crypt_message[e].charAt(i), crypt_key.charAt(i));
+                  svar[e] = char_svar;
+              }
+              System.out.println("Medelande krypterad");
+              crypt_svar = svar;
           }
       }
 
@@ -152,11 +166,13 @@ import java.util.Scanner;
 
           cryptModel.cryptSting();
           cryptModel.fileReader();
-          cryptModel.getCrypt_svar();
           cryptModel.makeFile();
           cryptModel.fileOutput();
 
-          System.out.println(cryptModel.getCrypt_svar());
+          cryptModel.setMessage(f);
+          cryptModel.cryptSting();
+          cryptModel.fileReader();
+          cryptModel.fileOutput();
 
       }
   }
