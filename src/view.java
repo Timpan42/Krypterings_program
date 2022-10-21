@@ -1,2 +1,2 @@
-public class view {
-}
+
+public class view {}

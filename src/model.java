@@ -1,3 +1,4 @@
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -58,10 +59,6 @@ import java.util.Scanner;
       private void fileOutput() {
           try {
               FileWriter myWriter = new FileWriter(file);
-              for (int i = 0; i < row; i++) {
-                  System.out.println(crypt_svar[i]);
-              }
-
               for (int i = 0; i < row; i++) {
                   myWriter.write(crypt_svar[i]);
                   System.out.println(crypt_svar[i]);
@@ -167,11 +164,6 @@ import java.util.Scanner;
           cryptModel.cryptSting();
           cryptModel.fileReader();
           cryptModel.makeFile();
-          cryptModel.fileOutput();
-
-          cryptModel.setMessage(f);
-          cryptModel.cryptSting();
-          cryptModel.fileReader();
           cryptModel.fileOutput();
 
       }
